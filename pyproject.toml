@@ -1,6 +1,6 @@
 [project]
 name = "aspark-policy"
-version = "0.0.1"
+version = "0.1.0"
 description = "Enterprise Policy-as-Code for the aSPARK product family."
 readme = "README.md"
 requires-python = ">=3.11"
