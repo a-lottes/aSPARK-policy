@@ -489,7 +489,8 @@ document; it always reflects the current state honestly.
 - [ ] Facilitator/`/charter` integration in aSPARK Core — read, resolve and
       bind `.spark/policy/policy.yaml`
 - [ ] Fill the built-in catalog — `iso27001`, `clean-architecture`, `java`,
-      `spring`, `react`, `aws`, `azure`, `sap` (only `owasp` scaffolded so far)
+      `spring`, `react`, `aws`, `azure` are authored; only `sap` remains
+      (excluded so far: no verified SAP source material to author credibly)
 - [ ] New lenses in aSPARK Core — `cloud` and `architecture`, so `aws`/`azure`/
       `clean-architecture` bind to a lens instead of plain constraints
 - [ ] Per-phase policy enforcement wired into the remaining seven skills
