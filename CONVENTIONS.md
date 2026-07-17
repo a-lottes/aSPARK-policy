@@ -64,3 +64,5 @@ the layout absorbs them without a later restructure (NFR-4):
 | Template company policy repo | `examples/` (deferred; `policy.yaml` at its root per the submodule-mount rule) |
 | Facilitator / `/charter` integration | lives in aSPARK Core, not this repo; consumes `.spark/policy/policy.yaml` |
 | `cloud` / `architecture` lenses | live in aSPARK Core; unblock `maps_to_lens` for the cloud/architecture packs |
+| Per-phase policy enforcement in the remaining seven skills | lives in aSPARK Core, not this repo; each skill reads the constitution the Facilitator already bound |
+| `Policy` / `PolicyViolation` node types + `gate_health` extension | lives in aspark-graph, not this repo; extends its existing artifact node types |
