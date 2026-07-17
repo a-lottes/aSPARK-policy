@@ -1,0 +1,31 @@
+# The rule fragment contributed by the ISO/IEC 27001 pack. Merged into the
+# effective policy when a project imports `aspark:iso27001`. As a `universal`
+# pack, a corporate level may mark this block `final: true` to guarantee it
+# holds in every project — the pack itself never sets `final` (that flag is
+# only ever applied by a downstream org/project policy.yaml).
+
+rules:
+  compliance:
+    iso27001: true
+
+    # Each control below maps to a real ISO/IEC 27001:2022 Annex A clause,
+    # spanning all four control themes (Organizational, People, Physical,
+    # Technological). The Product Owner records these as NFRs; the Reviewer
+    # and QA Tester verify what's diff- and browser-observable; the Release
+    # Manager blocks release while a required control is unmet.
+    controls:
+      security_policy: required           # A.5.1 Policies for information security
+      asset_inventory: required           # A.5.9 Inventory of information and other associated assets
+      access_control: required            # A.5.15 Access control
+      cloud_service_security: required    # A.5.23 Information security for use of cloud services
+      legal_regulatory_compliance: required # A.5.31 Legal, statutory, regulatory and contractual requirements
+      security_awareness_training: required # A.6.3 Information security awareness, education and training
+      offsite_asset_security: required    # A.7.9 Security of assets off-premises
+      vulnerability_management: required  # A.8.8 Management of technical vulnerabilities
+      cryptography_use: required          # A.8.24 Use of cryptography
+      secure_coding: required              # A.8.28 Secure coding
+
+    # Concrete, checkable expectations the controls above rely on.
+    documentation:
+      security_policy_recorded: required   # A.5.1 — the PO records this as a project NFR
+      asset_inventory_maintained: required # A.5.9

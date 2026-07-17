@@ -1,0 +1,11 @@
+# The rule fragment contributed by the azure pack. As a `baseline` pack,
+# this is an override-able starting scaffold, never `final`. No cloud lens
+# exists yet, so these rules apply as plain constitution constraints.
+
+rules:
+  cloud:
+    azure:
+      identity: least_privilege        # Azure RBAC roles scoped to the minimum permissions a service needs
+      encryption_at_rest: required      # Storage Account/Managed Disk/Azure SQL encryption enabled by default
+      tagging: "every resource carries an owner and a cost-center tag"
+      network_exposure: "no Network Security Group rule open to 0.0.0.0/0 on a non-public-facing port"

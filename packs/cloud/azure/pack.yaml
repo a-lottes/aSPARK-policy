@@ -1,0 +1,15 @@
+id: azure
+category: cloud
+kind: baseline                # an opinionated default, meant to be overridden per org — never `final`
+version: 1
+maps_to_lens: null            # no `cloud` lens exists in aSPARK Core yet — applies as a constitution constraint
+
+summary: >
+  Azure conventions — identity/least-privilege, encryption at rest, and
+  resource-tagging/cost governance — as a starting scaffold, mirroring the
+  `aws` pack for the second cloud provider. No aSPARK Core `cloud` lens
+  exists yet, so this pack's rules apply as plain constitution constraints
+  on the Engineering Manager until one does.
+
+references:
+  - https://learn.microsoft.com/azure/architecture/

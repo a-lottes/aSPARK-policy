@@ -1,0 +1,12 @@
+# The rule fragment contributed by the react pack. As a `baseline` pack,
+# this is an override-able starting scaffold, never `final`. Rules here feed
+# the Developer directly and the `ux` lens for the accessibility/state
+# concerns already covered by that lens.
+
+rules:
+  code:
+    react:
+      component_structure: "one component per file; co-locate its styles and tests"
+      state_management: "local state by default; lift to a shared store only when 2+ components need it"
+      accessibility: "every interactive element has a discernible accessible name; feeds the ux lens"
+      loading_error_states: "every async view has an explicit loading, empty and error state; feeds the ux lens"

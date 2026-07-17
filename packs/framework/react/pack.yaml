@@ -1,0 +1,15 @@
+id: react
+category: framework
+kind: baseline                # an opinionated default, meant to be overridden per org — never `final`
+version: 1
+maps_to_lens: ux               # per the README's binding table: Developer + the existing `ux` lens
+
+summary: >
+  React conventions — component structure, state management, and
+  accessibility/testing expectations — as a starting scaffold. This is the
+  one baseline pack that binds to an existing aSPARK Core lens (`ux`), since
+  React's accessibility and interaction-state concerns overlap directly with
+  what the `ux` lens already checks.
+
+references:
+  - https://react.dev/learn

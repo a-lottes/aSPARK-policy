@@ -1,0 +1,10 @@
+# The rule fragment contributed by the spring pack. As a `baseline` pack,
+# this is an override-able starting scaffold, never `final`.
+
+rules:
+  code:
+    spring:
+      layering: "controller -> service -> repository; no controller calls a repository directly"
+      dependency_injection: constructor    # prefer constructor injection over field injection
+      configuration_secrets: externalized  # via Spring Config / a secrets manager, never committed to application.yml
+      transaction_boundary: service_layer  # @Transactional lives on service methods, not controllers or repositories

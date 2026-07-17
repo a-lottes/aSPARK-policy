@@ -1,0 +1,11 @@
+# The rule fragment contributed by the aws pack. As a `baseline` pack, this
+# is an override-able starting scaffold, never `final`. No cloud lens exists
+# yet, so these rules apply as plain constitution constraints.
+
+rules:
+  cloud:
+    aws:
+      identity: least_privilege        # IAM roles scoped to the minimum permissions a service needs
+      encryption_at_rest: required      # S3/EBS/RDS encryption enabled by default
+      tagging: "every resource carries an owner and a cost-center tag"
+      network_exposure: "no security group open to 0.0.0.0/0 on a non-public-facing port"

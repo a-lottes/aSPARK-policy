@@ -1,0 +1,14 @@
+id: java
+category: language
+kind: baseline                # an opinionated default, meant to be overridden per org — never `final`
+version: 1
+maps_to_lens: null            # binds to the Developer via rules.code.java; no existing lens covers language conventions
+
+summary: >
+  Java language conventions — version baseline, formatting, and dependency
+  management — as a starting scaffold. This is a baseline, not a mandate:
+  every organization has its own Java conventions and is expected to override
+  this pack's specifics in its own policy.yaml.
+
+references:
+  - https://google.github.io/styleguide/javaguide.html

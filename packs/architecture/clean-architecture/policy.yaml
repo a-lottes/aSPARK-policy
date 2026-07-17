@@ -1,0 +1,11 @@
+# The rule fragment contributed by the clean-architecture pack. As a
+# `baseline` pack, this is an override-able starting scaffold, never `final`.
+# No architecture lens exists yet, so these rules apply as plain constitution
+# constraints (see the pack's summary and the README's lens-gap note).
+
+rules:
+  architecture:
+    dependency_rule: "source code dependencies point only inward, toward higher-level policy"
+    layering: "entities -> use cases -> interface adapters -> frameworks/drivers"
+    adr_required: true          # architecture decisions with rejected alternatives are recorded, per aSPARK's own /sprint-plan
+    framework_isolation: "frameworks and drivers are plugins to the business rules, never the other way around"

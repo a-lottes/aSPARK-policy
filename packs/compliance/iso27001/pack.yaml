@@ -1,0 +1,29 @@
+# Metadata for the ISO/IEC 27001 pack. Read by the Facilitator during /charter
+# to resolve `imports: [aspark:iso27001]` into effective rules and constraints.
+
+id: iso27001                 # the flat import id: aspark:iso27001
+category: compliance         # on-disk grouping only, not part of the id
+kind: universal               # an external standard, identical for every org → may be `final`
+version: 1                   # pack content version (bump on rule changes)
+
+# ISO/IEC 27001 Annex A spans organizational, people, physical AND
+# technological controls — broader than any single existing aSPARK Core lens
+# (`security` covers only the technological slice). No existing lens maps
+# 1:1, so this is left null and the pack applies as Product-Owner-led
+# constitution constraints instead — the same fallback shape already used for
+# the cloud/architecture lens gap. Logged as a finding, not fixed here: the
+# README's per-pack table describes this pack as binding to "several lenses,"
+# which the single-lens-or-null pack.yaml shape cannot express as written.
+maps_to_lens: null
+
+summary: >
+  ISO/IEC 27001:2022 Annex A information security controls — organizational,
+  people, physical and technological — as aSPARK's own summary interpretation.
+  Feeds the Product Owner (compliance NFRs), the Engineering Manager
+  (architecture/access-control decisions), the Developer (secure coding and
+  cryptography use), the Reviewer (control enforcement on the diff), and the
+  QA Tester (observable controls). This is NOT a certified compliance
+  artifact — see the disclaimer in compliance.md.
+
+references:
+  - https://www.iso.org/standard/27001

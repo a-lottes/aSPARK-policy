@@ -1,0 +1,11 @@
+# The rule fragment contributed by the java pack. As a `baseline` pack, this
+# is an override-able starting scaffold, never `final` — organizations are
+# expected to replace these specifics with their own conventions.
+
+rules:
+  code:
+    java:
+      version: 21                    # LTS baseline; override to the org's actual target
+      formatter: google-java-format  # https://github.com/google/google-java-format
+      dependency_management: maven   # or gradle — pick one and be consistent
+      null_handling: "prefer Optional<T> over returning null from public APIs"
