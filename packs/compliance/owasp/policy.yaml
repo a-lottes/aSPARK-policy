@@ -1,0 +1,31 @@
+# The rule fragment contributed by the OWASP pack. Merged into the effective
+# policy when a project imports `aspark:owasp`. As a `universal` pack, a
+# corporate level may mark this block `final: true` to guarantee it holds in
+# every project (see the README's inheritance semantics).
+
+rules:
+  security:
+    owasp_top10: true
+
+    # Each control maps to an OWASP Top 10 (2021) category. The Reviewer
+    # enforces these on the diff; the QA Tester verifies the observable ones in
+    # the browser; the Release Manager blocks release while any required control
+    # is unmet.
+    controls:
+      access_control: required          # A01 Broken Access Control
+      cryptographic_storage: required   # A02 Cryptographic Failures
+      injection_defense: required       # A03 Injection
+      secure_design_review: required    # A04 Insecure Design
+      secure_configuration: required    # A05 Security Misconfiguration
+      dependency_scanning: required     # A06 Vulnerable & Outdated Components
+      authentication_hardening: required # A07 Identification & Auth Failures
+      integrity_verification: required  # A08 Software & Data Integrity Failures
+      security_logging: required        # A09 Logging & Monitoring Failures
+      ssrf_defense: required            # A10 Server-Side Request Forgery
+
+    # Concrete, checkable expectations the controls above rely on.
+    dependency_policy:
+      known_vulnerabilities: block      # no dependency with a known CVE ships
+      scan_on_release: required
+    secrets:
+      in_source: forbidden              # no credentials committed to the repo

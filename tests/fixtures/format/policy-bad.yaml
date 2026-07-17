@@ -1,0 +1,15 @@
+# KNOWN-BAD: a policy.yaml with violations. Each inline comment names the
+# rule (FORMAT-REFERENCE.md) that the line breaks.
+
+# BREAKS §1: `schema_version` is REQUIRED and must be an integer — missing here.
+
+name: Broken Policy
+
+imports:
+  - aspark:compliance/owasp   # BREAKS §3 flat-id rule: category must not appear in the id
+  - owasp                     # BREAKS §3: missing a namespace prefix (aspark:/company:/git@)
+
+rules:
+  security:
+    owasp_top10: true
+    final: true               # (valid on its own — kept to contrast with pack-bad)

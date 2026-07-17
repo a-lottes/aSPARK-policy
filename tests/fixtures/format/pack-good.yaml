@@ -1,0 +1,13 @@
+# KNOWN-GOOD: a valid pack.yaml. Mirrors the shipped owasp pack.
+# Conforms to FORMAT-REFERENCE.md §2.
+id: owasp                    # flat id == directory name
+category: compliance         # one of the six categories; metadata only
+kind: universal              # external standard → may be `final`
+version: 1
+maps_to_lens: security       # activates the existing security lens
+
+summary: >
+  OWASP Top 10 (2021) web-application risk controls.
+
+references:
+  - https://owasp.org/Top10/

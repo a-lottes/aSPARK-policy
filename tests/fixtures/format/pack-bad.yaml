@@ -1,0 +1,7 @@
+# KNOWN-BAD: a pack.yaml with violations. Each inline comment names the
+# rule (FORMAT-REFERENCE.md §2) that the line breaks.
+id: compliance/aws          # BREAKS §2: id must be a flat kebab-case name, no category
+category: infrastructure    # BREAKS §2: not one of the six allowed categories
+kind: standard              # BREAKS §2: `kind` must be `universal` or `baseline`
+# BREAKS §2: `version` is REQUIRED — missing here.
+maps_to_lens: cloud         # BREAKS §2: `cloud` is not an existing lens; use null until it exists

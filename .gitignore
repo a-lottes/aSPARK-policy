@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.venv/
+build/
+dist/
+
+# uv — the lockfile is committed (see NFR-6); only the cache is ignored
+.uv-cache/
+
+# graphify knowledge-graph output (disposable, rebuildable)
+graphify-out/
+
+# macOS / editor cruft
+.DS_Store
+.idea/
+.vscode/
+*.swp

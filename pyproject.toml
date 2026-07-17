@@ -1,0 +1,28 @@
+[project]
+name = "aspark-policy"
+version = "0.0.1"
+description = "Enterprise Policy-as-Code for the aSPARK product family."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "Andreas Lottes" }]
+keywords = ["aspark", "policy-as-code", "governance", "engineering-standards"]
+
+# No runtime dependencies yet. The `foundation` increment ships an empty,
+# installable scaffold only — no policy parsing, no schema, no `validate` CLI
+# (spec §6, AC-6.5). Deliberately NO `[project.scripts]` entry, so no CLI is
+# even wired until a later increment adds one.
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/aspark_policy"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

@@ -1,0 +1,21 @@
+# Metadata for the OWASP pack. Read by the Facilitator during /charter to
+# resolve `imports: [aspark:owasp]` into effective rules and lens activation.
+
+id: owasp                    # the flat import id: aspark:owasp
+category: compliance         # on-disk grouping only, not part of the id
+kind: universal              # an external standard, identical for every org → may be `final`
+version: 1                   # pack content version (bump on rule changes)
+
+# The existing aSPARK Core lens this pack switches on. Importing aspark:owasp
+# activates the `security` lens in the project profile — it does not duplicate
+# it. Rules below that go beyond the lens become constitution constraints.
+maps_to_lens: security
+
+summary: >
+  OWASP Top 10 (2021) web-application risk controls, plus baseline secure-coding
+  and dependency-hygiene expectations. Feeds the Reviewer and QA Tester through
+  the security lens; feeds the Product Owner as a compliance requirement.
+
+references:
+  - https://owasp.org/Top10/
+  - https://owasp.org/www-project-proactive-controls/

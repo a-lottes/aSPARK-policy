@@ -1,0 +1,18 @@
+# KNOWN-GOOD: a valid org-level policy.yaml.
+# Conforms to FORMAT-REFERENCE.md §1.
+schema_version: 1
+name: ACME Enterprise Policy
+
+imports:
+  - aspark:owasp            # built-in pack, flat id
+  - company:acme-naming     # company pack in the same repo
+
+rules:
+  review:
+    minimum_reviewers: 2
+  security:
+    owasp_top10: true
+    final: true             # universal standard → may be locked
+  code:
+    java:
+      version: 21
