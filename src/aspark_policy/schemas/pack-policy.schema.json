@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "aSPARK-policy pack's own policy.yaml fragment",
+  "description": "The bare rules-only policy.yaml a pack ships alongside its pack.yaml, per FORMAT-REFERENCE.md §2.1. Distinct from a project/org-level policy.yaml (see project-policy.schema.json) — carries no schema_version, name, extends or imports.",
+  "type": "object",
+  "required": ["rules"],
+  "additionalProperties": false,
+  "properties": {
+    "rules": {
+      "type": "object",
+      "additionalProperties": { "$ref": "#/$defs/ruleBlock" }
+    }
+  },
+  "$defs": {
+    "ruleBlock": {
+      "description": "A rule domain block. Structurally an open mapping; only `final` carries a fixed meaning (FORMAT-REFERENCE.md §1.1). No domain-specific sub-key is validated (§6).",
+      "type": "object",
+      "properties": {
+        "final": { "type": "boolean" }
+      },
+      "additionalProperties": true
+    }
+  }
+}

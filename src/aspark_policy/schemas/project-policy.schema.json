@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "aSPARK-policy project/org-level policy.yaml",
+  "description": "A project or organization policy activation file, per FORMAT-REFERENCE.md §1. Distinct from a pack's own bare-rules policy.yaml fragment (see pack-policy.schema.json).",
+  "type": "object",
+  "required": ["schema_version", "name"],
+  "additionalProperties": false,
+  "properties": {
+    "schema_version": { "type": "integer" },
+    "name": { "type": "string" },
+    "extends": { "type": "string" },
+    "imports": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^(aspark:[a-z0-9]+(-[a-z0-9]+)*|company:[a-z0-9]+(-[a-z0-9]+)*|git@[^\\s:]+:[^\\s#]+\\.git#\\S+)$"
+      }
+    },
+    "rules": {
+      "type": "object",
+      "additionalProperties": { "$ref": "#/$defs/ruleBlock" }
+    }
+  },
+  "$defs": {
+    "ruleBlock": {
+      "description": "A rule domain block (e.g. `security`, `code.java`). Structurally an open mapping; only `final` carries a fixed meaning (FORMAT-REFERENCE.md §1.1). No domain-specific sub-key is validated (§6).",
+      "type": "object",
+      "properties": {
+        "final": { "type": "boolean" }
+      },
+      "additionalProperties": true
+    }
+  }
+}

@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "aSPARK-policy pack.yaml",
+  "description": "Metadata for a single policy pack, per FORMAT-REFERENCE.md §2.",
+  "type": "object",
+  "required": ["id", "category", "kind", "version", "maps_to_lens"],
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$",
+      "description": "Flat kebab-case id. Must never embed the category (the flat-id rule)."
+    },
+    "category": {
+      "type": "string",
+      "enum": ["compliance", "architecture", "language", "framework", "cloud", "platform"]
+    },
+    "kind": {
+      "type": "string",
+      "enum": ["universal", "baseline"]
+    },
+    "version": { "type": "integer" },
+    "maps_to_lens": {
+      "enum": ["seo", "ux", "api", "cli", "library", "security", "i18n", "data", null]
+    },
+    "summary": { "type": "string" },
+    "references": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  }
+}

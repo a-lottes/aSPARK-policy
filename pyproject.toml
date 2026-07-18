@@ -15,7 +15,7 @@ keywords = ["aspark", "policy-as-code", "governance", "engineering-standards"]
 dependencies = []
 
 [project.optional-dependencies]
-dev = ["pytest>=8.0"]
+dev = ["pytest>=8.0", "jsonschema>=4.20", "PyYAML>=6.0"]
 
 [build-system]
 requires = ["hatchling"]
