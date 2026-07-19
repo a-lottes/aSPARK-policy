@@ -1,0 +1,9 @@
+# KNOWN-BAD: a pack-fragment policy.yaml violating the rule-anatomy fields
+# (FORMAT-REFERENCE.md §1.1). Each inline comment names the rule broken.
+rules:
+  security:
+    id: SEC-014
+    severity: critical    # BREAKS §1.1: not one of info/warning/blocking
+    scope: "**/*"
+    check: regex-scan     # BREAKS §1.1: not one of static/artifact/graph-query
+    final: true

@@ -353,6 +353,14 @@ def test_pack_policy_schema_matches_format_reference_field_set():
     assert PACK_POLICY_SCHEMA["additionalProperties"] is False
 
 
+def test_rule_block_def_is_identical_across_pack_and_project_policy_schemas():
+    # R1 drift check: the shared $defs/ruleBlock (final/id/severity/scope/check)
+    # must stay byte-for-byte identical across both self-contained schema files.
+    pack_rule_block = PACK_POLICY_SCHEMA["$defs"]["ruleBlock"]
+    project_rule_block = PROJECT_POLICY_SCHEMA["$defs"]["ruleBlock"]
+    assert pack_rule_block == project_rule_block
+
+
 def test_flat_id_kebab_pattern_is_identical_across_pack_and_project_policy_schemas():
     # R4 drift check: the kebab-case class must be byte-identical wherever it
     # is duplicated, since the two schema files are self-contained (ADR).
@@ -392,6 +400,61 @@ def test_dependencies_remain_empty():
     assert "jsonschema" in dev_deps
     assert "PyYAML" in dev_deps
     assert "scripts" not in pyproject["project"]  # still no CLI wired (§6)
+
+
+# --- rule-anatomy-v2: id/severity/scope/check as new optional ruleBlock keys ---
+
+
+def test_rule_anatomy_good_fixture_validates_clean():
+    # AC-2.3
+    instance = _safe_load(FIXTURES_DIR / "rule-anatomy-good.yaml")
+    errors = _pack_policy_errors(instance)
+    assert errors == []
+
+
+def test_rule_anatomy_bad_severity_is_rejected():
+    # AC-2.4: rule-anatomy-bad.yaml: severity: critical (not in enum).
+    instance = _safe_load(FIXTURES_DIR / "rule-anatomy-bad.yaml")
+    assert instance["rules"]["security"]["severity"] == "critical"
+    errors = _pack_policy_errors(instance)
+    assert any(
+        e.validator == "enum" and list(e.absolute_path) == ["rules", "security", "severity"]
+        for e in errors
+    )
+
+
+def test_rule_anatomy_bad_check_is_rejected():
+    # AC-2.4: rule-anatomy-bad.yaml: check: regex-scan (not in enum).
+    instance = _safe_load(FIXTURES_DIR / "rule-anatomy-bad.yaml")
+    assert instance["rules"]["security"]["check"] == "regex-scan"
+    errors = _pack_policy_errors(instance)
+    assert any(
+        e.validator == "enum" and list(e.absolute_path) == ["rules", "security", "check"]
+        for e in errors
+    )
+
+
+def test_original_four_fixtures_still_behave_as_before():
+    # AC-2.5: the pre-existing fixtures are untouched and behave identically
+    # after the ruleBlock extension — additive, not a breaking change.
+    assert _pack_errors(_safe_load(FIXTURES_DIR / "pack-good.yaml")) == []
+    assert len(_pack_errors(_safe_load(FIXTURES_DIR / "pack-bad.yaml"))) >= 1
+    assert _project_policy_errors(_safe_load(FIXTURES_DIR / "policy-good.yaml")) == []
+    assert len(_project_policy_errors(_safe_load(FIXTURES_DIR / "policy-bad.yaml"))) >= 1
+
+
+def test_owasp_security_block_carries_rule_anatomy_and_validates_clean():
+    # AC-3.1/AC-3.2: owasp's top-level security block migrated to the new
+    # anatomy; controls/dependency_policy/secrets untouched (§6, R2).
+    instance = _safe_load(PACKS_DIR / "compliance" / "owasp" / "policy.yaml")
+    security = instance["rules"]["security"]
+    assert security["id"] == "OWASP-TOP10"
+    assert security["severity"] == "blocking"
+    assert security["scope"] == "**/*"
+    assert security["check"] == "static"
+    assert security["owasp_top10"] is True
+    assert "controls" in security and "dependency_policy" in security and "secrets" in security
+    assert _pack_policy_errors(instance) == []
 
 
 def test_single_file_validation_completes_under_200ms():

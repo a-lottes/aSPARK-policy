@@ -1,0 +1,10 @@
+# KNOWN-GOOD: a pack-fragment policy.yaml exercising the rule-anatomy fields
+# (id, severity, scope, check) added alongside `final` in FORMAT-REFERENCE.md
+# §1.1. Conforms to pack-policy.schema.json.
+rules:
+  security:
+    id: SEC-014
+    severity: blocking
+    scope: "**/*"
+    check: static
+    final: true

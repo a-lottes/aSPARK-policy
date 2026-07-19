@@ -23,10 +23,14 @@
   },
   "$defs": {
     "ruleBlock": {
-      "description": "A rule domain block (e.g. `security`, `code.java`). Structurally an open mapping; only `final` carries a fixed meaning (FORMAT-REFERENCE.md §1.1). No domain-specific sub-key is validated (§6).",
+      "description": "A rule domain block. Structurally an open mapping; `final`, `id`, `severity`, `scope` and `check` carry a fixed meaning (FORMAT-REFERENCE.md §1.1). No domain-specific sub-key is validated (§6).",
       "type": "object",
       "properties": {
-        "final": { "type": "boolean" }
+        "final": { "type": "boolean" },
+        "id": { "type": "string" },
+        "severity": { "enum": ["info", "warning", "blocking"] },
+        "scope": { "type": "string" },
+        "check": { "enum": ["static", "artifact", "graph-query"] }
       },
       "additionalProperties": true
     }

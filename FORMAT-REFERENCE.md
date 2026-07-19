@@ -52,6 +52,44 @@ department beats corporate). This document defines the *shape*; the *resolution
 semantics* are documented in the README and will be executed by a later
 increment — `foundation` ships neither a resolver nor a validator.
 
+#### Rule anatomy — optional, richer identification
+
+A rule block may additionally carry four optional keys, siblings of `final`,
+identifying and classifying the rule itself rather than its content:
+
+| Key | Type / shape | Meaning |
+|---|---|---|
+| `id` | string | A stable rule identifier, e.g. `SEC-014`. Not required — a rule block with no `id` is still valid — but recommended once a rule is referenced elsewhere (an exception record, a gate override, an audit trail). |
+| `severity` | enum: `info`, `warning`, `blocking` | How the violation should be treated. Only `blocking` is meant to stop a gate; `info`/`warning` are recorded but non-stopping. |
+| `scope` | string, a glob pattern | Which files/paths the rule applies to, e.g. `"**/*"` or `"src/**"`. |
+| `check` | enum: `static`, `artifact`, `graph-query` | The check class: `static` (patterns, linters, scanners over files), `artifact` (schema/content rules over `.spark` documents), or `graph-query` (structural queries over a knowledge graph). |
+
+> **`check: graph-query` is structural only.** This repo can document and
+> validate the *shape* of a `graph-query` check, but it cannot execute one —
+> that requires querying a knowledge graph, which is aSPARK-graph's job, a
+> separate repository. A rule with `check: graph-query` is a valid
+> `policy.yaml`/`pack.yaml` document today; it becomes actually enforceable
+> only once an aSPARK-graph integration exists.
+
+Worked example:
+
+```yaml
+rules:
+  security:
+    id: SEC-014
+    severity: blocking
+    scope: "**/*"
+    check: static
+    final: true
+```
+
+None of these four keys are required — a rule block with only `final` (or with
+none of the five) remains valid, exactly as it did before this section
+existed. They add richer identification on top of the existing structural
+conventions; they do not replace or constrain the domain-specific sub-keys a
+rule block already carries — this document validates structure only, never
+domain semantics.
+
 ---
 
 ## 2. `pack.yaml`

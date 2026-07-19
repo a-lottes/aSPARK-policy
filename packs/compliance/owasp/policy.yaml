@@ -5,6 +5,13 @@
 
 rules:
   security:
+    # Rule anatomy (FORMAT-REFERENCE.md §1.1) — identifies and classifies
+    # this rule block; added by the rule-anatomy-v2 increment.
+    id: OWASP-TOP10
+    severity: blocking
+    scope: "**/*"
+    check: static
+
     owasp_top10: true
 
     # Each control maps to an OWASP Top 10 (2021) category. The Reviewer
