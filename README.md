@@ -483,8 +483,9 @@ document; it always reflects the current state honestly.
 - [x] Inheritance semantics defined — specific-wins, list merging, `final` lock
 - [x] Pack catalog designed — categories, universal vs. baseline, per-pack
       lens binding; `owasp` scaffolded under `packs/` as the reference pack
-- [ ] `policy.yaml` / `pack.yaml` schema (JSON Schema) — formal, validatable
-      definition
+- [x] `policy.yaml` / `pack.yaml` schema (JSON Schema, draft 2020-12) —
+      formal, validatable definition under `src/aspark_policy/schemas/`;
+      validates all four format fixtures and all 8 shipped packs clean
 - [ ] `aspark-policy validate` CLI — lint a policy repo standalone and in CI
 - [ ] Facilitator/`/charter` integration in aSPARK Core — read, resolve and
       bind `.spark/policy/policy.yaml`

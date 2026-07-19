@@ -33,10 +33,11 @@ repository paths.
 ## The code home
 
 Tooling code lives in **`src/aspark_policy/`** (src-layout, package name
-`aspark_policy`), with tests in **`tests/`**. Today the package is an **empty
-scaffold** — it installs and imports but ships no logic (spec §6). The future
-**JSON Schema** and the **`aspark-policy validate` CLI** are added here in later
-increments; no other location is introduced for them.
+`aspark_policy`), with tests in **`tests/`**. The **JSON Schema** for
+`policy.yaml`/`pack.yaml` ships under `src/aspark_policy/schemas/` (three
+draft-2020-12 schema files, tested in `tests/test_format_schemas.py`). The
+future **`aspark-policy validate` CLI** is added here in a later increment; no
+other location is introduced for it.
 
 ## Where a pack goes
 
@@ -58,7 +59,6 @@ the layout absorbs them without a later restructure (NFR-4):
 
 | Roadmap item | Home |
 |---|---|
-| JSON Schema for `policy.yaml` / `pack.yaml` | `src/aspark_policy/` (+ fixtures already in `tests/fixtures/format/`) |
 | `aspark-policy validate` CLI | `src/aspark_policy/` (a `[project.scripts]` entry added in `pyproject.toml` then) |
 | Fill the built-in catalog (`iso27001`, `java`, `spring`, `react`, `aws`, `azure`, `sap`, `clean-architecture`) | `packs/<category>/<id>/` (category dirs already exist) |
 | Template company policy repo | `examples/` (deferred; `policy.yaml` at its root per the submodule-mount rule) |
