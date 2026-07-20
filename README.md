@@ -85,8 +85,8 @@ Requires Python ≥3.11 and [uv](https://docs.astral.sh/uv/). Not yet published
 to a package index — work from a checkout of this repository:
 
 ```bash
-git clone <this-repo-url> aspark-policy
-cd aspark-policy
+git clone https://github.com/a-lottes/aSPARK-policy.git
+cd aSPARK-policy
 uv sync --extra dev    # installs into a local .venv
 uv run pytest          # 56 tests: schema self-validity, fixtures, all 8 packs
 ```

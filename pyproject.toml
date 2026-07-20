@@ -17,6 +17,10 @@ dependencies = []
 [project.optional-dependencies]
 dev = ["pytest>=8.0", "jsonschema>=4.20", "PyYAML>=6.0"]
 
+[project.urls]
+Homepage = "https://github.com/a-lottes/aSPARK-policy"
+Repository = "https://github.com/a-lottes/aSPARK-policy"
+
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
