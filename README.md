@@ -53,8 +53,36 @@ The goal is not to replace your engineering standards — it is to make them
 
 ## Install
 
+aSPARK-policy has two audiences, and they install different things — the same
+split aSPARK Core makes between using the plugin and hacking on it.
+
+### For projects adopting a policy (the enterprise path)
+
+A policy is not a package you install — it is a **repository you mount**.
+Your organization keeps its standards in its own policy repo; each project
+pulls it in as a Git submodule at `.spark/policy`, next to the constitution
+and the feature artifacts:
+
+```bash
+git submodule add \
+  git@github.com:company/engineering-policy.git \
+  .spark/policy
+```
+
+That is the whole install for a consuming project — no Python, no tooling,
+nothing to run. See [Integration](#integration-repository-layer-not-another-plugin)
+for the full layout and [How agents discover the policy](#how-agents-discover-the-policy)
+for what happens next.
+
+> **Honest limitation:** today this mounts the *content* (standards, rules,
+> packs) but nothing enforces it yet — the `aspark-policy validate` CLI and
+> the Facilitator/`/charter` binding in aSPARK Core are still open roadmap
+> items. Mounting now establishes the convention enforcement will attach to.
+
+### For contributors (working on the format, schemas or packs)
+
 Requires Python ≥3.11 and [uv](https://docs.astral.sh/uv/). Not yet published
-to a package index — install from a checkout of this repository:
+to a package index — work from a checkout of this repository:
 
 ```bash
 git clone <this-repo-url> aspark-policy
@@ -63,12 +91,16 @@ uv sync --extra dev    # installs into a local .venv
 uv run pytest          # 56 tests: schema self-validity, fixtures, all 8 packs
 ```
 
-What this gets you today: the documented format
+What this gets you: the documented format
 ([`FORMAT-REFERENCE.md`](FORMAT-REFERENCE.md)), three tested JSON Schemas
 under `src/aspark_policy/schemas/` you can point any JSON-Schema-aware tool
 at, and the built-in `aspark:` pack catalog under `packs/`. There is **no
 CLI yet** — no `aspark-policy validate` command, no `[project.scripts]` entry.
-See [Project Status](#project-status) for what's still open.
+See [Project Status](#project-status) for what's still open, and
+[`CONTRIBUTING.md`](CONTRIBUTING.md) for the pack-adding workflow.
+
+> **One-line takeaway:** adopting a policy → one `git submodule add` into
+> `.spark/policy`. Contributing to the format → clone + `uv sync`. ✅
 
 ---
 
