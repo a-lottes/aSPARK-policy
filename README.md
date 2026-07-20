@@ -6,9 +6,12 @@
 > policy layer that every aSPARK agent follows — consistently, automatically and
 > auditable.
 
-> **Project status: concept / design phase.** This README describes the design
-> of aSPARK-policy. Nothing is implemented yet — see
-> [Project Status](#project-status) for the honest roadmap. The sibling
+> **Project status: early development, unreleased.** The design is settled and
+> a working foundation exists — a documented format (`FORMAT-REFERENCE.md`), a
+> tested JSON Schema, an installable Python package, and 8 real catalog packs
+> (see [Install](#install) and [Project Status](#project-status) for the
+> honest roadmap). What's still missing: a `validate` CLI, the Facilitator
+> integration in aSPARK Core, and an actual tagged release. The sibling
 > projects [aSPARK](https://github.com/a-lottes/aSPARK) (the delivery loop) and
 > [aspark-graph](https://github.com/a-lottes/aSPARK-graph) (the traceability
 > graph) exist and work today.
@@ -48,6 +51,27 @@ The goal is not to replace your engineering standards — it is to make them
 
 ---
 
+## Install
+
+Requires Python ≥3.11 and [uv](https://docs.astral.sh/uv/). Not yet published
+to a package index — install from a checkout of this repository:
+
+```bash
+git clone <this-repo-url> aspark-policy
+cd aspark-policy
+uv sync --extra dev    # installs into a local .venv
+uv run pytest          # 56 tests: schema self-validity, fixtures, all 8 packs
+```
+
+What this gets you today: the documented format
+([`FORMAT-REFERENCE.md`](FORMAT-REFERENCE.md)), three tested JSON Schemas
+under `src/aspark_policy/schemas/` you can point any JSON-Schema-aware tool
+at, and the built-in `aspark:` pack catalog under `packs/`. There is **no
+CLI yet** — no `aspark-policy validate` command, no `[project.scripts]` entry.
+See [Project Status](#project-status) for what's still open.
+
+---
+
 ## Position in the Product Family
 
 ```
@@ -57,18 +81,18 @@ The goal is not to replace your engineering standards — it is to make them
         │                   │                   │
    aSPARK-policy      aspark-graph        aSPARK-insights
     (this repo,                             (planned)
-     concept)
+   early development)
         │                   │                   │
         └───────────────────┼───────────────────┘
                         aSPARK Core
 ```
 
-| Product              | Status   | Responsibility                                   |
-| -------------------- | -------- | ------------------------------------------------ |
-| **aSPARK Core**      | shipped  | Delivery process, roles, gates, templates        |
-| **aspark-graph**     | shipped  | Traceability and engineering knowledge graph     |
-| **aSPARK-policy**    | concept  | Enterprise engineering standards and governance  |
-| **aSPARK-insights**  | planned  | Engineering metrics and management dashboards    |
+| Product              | Status              | Responsibility                                   |
+| -------------------- | -------------------- | ------------------------------------------------ |
+| **aSPARK Core**      | shipped              | Delivery process, roles, gates, templates        |
+| **aspark-graph**     | shipped              | Traceability and engineering knowledge graph     |
+| **aSPARK-policy**    | early development, unreleased | Enterprise engineering standards and governance  |
+| **aSPARK-insights**  | planned              | Engineering metrics and management dashboards    |
 
 ### Separation of concerns
 
@@ -160,8 +184,12 @@ rules:
     adr_required: true
 
   security:
+    id: SEC-014             # stable rule identifier
+    severity: blocking      # info | warning | blocking — only blocking stops a gate
+    scope: "**/*"           # glob: which files/paths this rule applies to
+    check: static           # static | artifact | graph-query
     owasp_top10: true
-    final: true            # locked — lower levels cannot weaken this block
+    final: true             # locked — lower levels cannot weaken this block
 
   code:
     java:
@@ -377,7 +405,7 @@ an existing agent directly:
 
 ```
 packs/compliance/owasp/
-├── pack.yaml       # metadata: id, category, kind, maps_to_lens
+├── pack.yaml       # metadata: id, category, kind, version, maps_to_lens, summary, references
 ├── security.md     # the human-readable standard
 └── policy.yaml     # the rule fragment this pack contributes
 ```
@@ -473,8 +501,8 @@ The policy engine defines the rules; the graph verifies traceability.
 
 ## Project Status
 
-aSPARK-policy is in the **concept / design phase**. This README is the design
-document; it always reflects the current state honestly.
+aSPARK-policy is in **early development, not yet released**. This README is
+the design document; it always reflects the current state honestly.
 
 - [x] Vision, positioning in the product family, separation of concerns
 - [x] Integration design: repository layer via Git submodule at `.spark/policy`
@@ -486,6 +514,10 @@ document; it always reflects the current state honestly.
 - [x] `policy.yaml` / `pack.yaml` schema (JSON Schema, draft 2020-12) —
       formal, validatable definition under `src/aspark_policy/schemas/`;
       validates all four format fixtures and all 8 shipped packs clean
+- [x] Rule anatomy — optional `id`/`severity`/`scope`/`check` on any rule
+      block, aligned with the aSPARK Enterprise Architecture Handbook's
+      vision; `check: graph-query` is structural only until aSPARK-graph
+      integrates
 - [ ] `aspark-policy validate` CLI — lint a policy repo standalone and in CI
 - [ ] Facilitator/`/charter` integration in aSPARK Core — read, resolve and
       bind `.spark/policy/policy.yaml`
