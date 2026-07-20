@@ -1,3 +1,7 @@
+# aSPARK delivery trail — kept local, deliberately NOT published
+# (this repo is consumed as a submodule; its internal dev plans stay private)
+.spark/
+
 # Python
 __pycache__/
 *.py[cod]
