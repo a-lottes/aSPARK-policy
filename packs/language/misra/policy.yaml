@@ -1,0 +1,14 @@
+# The rule fragment contributed by the misra pack. As a `baseline` pack, this
+# is an override-able starting scaffold, never `final`. It encodes
+# REPRESENTATIVE, NON-VERBATIM safety-coding principles — it does NOT reproduce
+# any numbered MISRA rule text (that content is licensed; see conventions.md).
+
+rules:
+  code:
+    misra:
+      compliance: required            # MISRA C (or C++) compliance is required for safety-relevant code
+      static_analysis: required       # a MISRA-checking static analyser runs in CI, not just locally
+      dynamic_memory: forbidden        # no dynamic memory allocation in safety-critical code paths
+      recursion: forbidden             # no recursion (bounded stack usage must be demonstrable)
+      defined_behaviour_only: required # no reliance on undefined/unspecified/implementation-defined behaviour
+      deviations_documented: required  # any permitted deviation from the standard is recorded with justification

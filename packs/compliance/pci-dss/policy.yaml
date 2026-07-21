@@ -1,0 +1,26 @@
+# The rule fragment contributed by the PCI-DSS pack. Merged into the effective
+# policy when a project imports `aspark:pci-dss`. As a `universal` pack, a
+# corporate level may mark this block `final: true` — the pack itself never
+# sets `final` (only a downstream org/project policy does).
+
+rules:
+  compliance:
+    pci_dss: true
+
+    # Each control maps to one real PCI-DSS v4.0 requirement (the 12
+    # requirements grouped under 6 goals). The Reviewer enforces the
+    # diff-observable ones; the QA Tester verifies observable behaviour; the
+    # Release Manager blocks release while a required control is unmet.
+    controls:
+      network_security_controls: required   # Req. 1 Install and maintain network security controls
+      secure_configurations: required       # Req. 2 Apply secure configurations to all system components
+      protect_stored_account_data: required # Req. 3 Protect stored account data
+      encrypt_transmission: required        # Req. 4 Protect cardholder data with strong cryptography during transmission over open, public networks
+      anti_malware: required                # Req. 5 Protect all systems and networks from malicious software
+      secure_software_development: required # Req. 6 Develop and maintain secure systems and software
+      access_by_need_to_know: required      # Req. 7 Restrict access to system components and cardholder data by business need to know
+      authenticate_access: required         # Req. 8 Identify users and authenticate access to system components
+      restrict_physical_access: required    # Req. 9 Restrict physical access to cardholder data
+      log_and_monitor: required             # Req. 10 Log and monitor all access to system components and cardholder data
+      test_security_regularly: required      # Req. 11 Test security of systems and networks regularly
+      information_security_policy: required # Req. 12 Support information security with organizational policies and programs

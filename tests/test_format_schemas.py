@@ -211,13 +211,16 @@ def test_policy_good_fixture_is_rejected_by_pack_policy_schema():
 
 # --- T5: US-4 — every shipped pack conforms to the new schemas ---
 
-# The 8 packs known to be shipped as of this increment (foundation: owasp;
-# fill-pack-catalog: the other 7). A discovered pack outside this set, or a
-# missing one, fails loudly below rather than silently changing the sweep.
+# The packs known to be shipped (foundation: owasp; fill-pack-catalog: 7 more;
+# industry-packs: pci-dss, un-r155, misra). A discovered pack outside this set,
+# or a missing one, fails loudly below rather than silently changing the sweep.
 KNOWN_PACKS = [
     ("compliance", "owasp"),
     ("compliance", "iso27001"),
+    ("compliance", "pci-dss"),
+    ("compliance", "un-r155"),
     ("language", "java"),
+    ("language", "misra"),
     ("framework", "spring"),
     ("framework", "react"),
     ("architecture", "clean-architecture"),

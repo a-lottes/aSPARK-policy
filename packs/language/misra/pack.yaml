@@ -1,0 +1,25 @@
+# Metadata for the MISRA pack. Read by the Facilitator during /charter to
+# resolve `imports: [aspark:misra]` into effective rules and constraints.
+
+id: misra                    # the flat import id: aspark:misra
+category: language           # a C/C++ CODING standard → the language axis, next to `java`.
+                             # This is the concrete proof that "industry" (automotive)
+                             # is orthogonal to the technical axes: a safety-coding
+                             # standard belongs on `language`, not in any industry bucket.
+kind: baseline               # a deliberately-partial, override-me scaffold — never `final`
+version: 1                   # pack content version (bump on rule changes)
+
+# Binds to the Developer/Reviewer via rules.code; no existing aSPARK Core lens
+# covers C/C++ coding conventions.
+maps_to_lens: null
+
+summary: >
+  MISRA C/C++ safety-critical coding — as a baseline scaffold of representative
+  principles, NOT the licensed standard. Automotive's coding-standard anchor,
+  placed on the `language` axis (next to `java`) because that is what it is: a
+  coding standard, not an industry category. Feeds the Developer and Reviewer.
+  It summarizes MISRA at principle level and reproduces no numbered rule text —
+  see conventions.md.
+
+references:
+  - https://misra.org.uk/

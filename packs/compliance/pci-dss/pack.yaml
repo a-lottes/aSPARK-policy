@@ -1,0 +1,26 @@
+# Metadata for the PCI-DSS pack. Read by the Facilitator during /charter to
+# resolve `imports: [aspark:pci-dss]` into effective rules and constraints.
+
+id: pci-dss                  # the flat import id: aspark:pci-dss
+category: compliance         # on-disk grouping only, not part of the id
+kind: universal              # an external standard, identical for every org → may be `final`
+version: 1                   # pack content version (bump on rule changes)
+
+# PCI-DSS is a security-technical standard (network, cryptography, access
+# control, monitoring) that maps cleanly onto aSPARK Core's existing `security`
+# lens — like `owasp`, and unlike `iso27001` whose org/people/physical breadth
+# fits no single lens.
+maps_to_lens: security
+
+summary: >
+  PCI-DSS v4.0 (Payment Card Industry Data Security Standard) — the 12
+  requirements grouped under 6 goals — as aSPARK's own summary interpretation.
+  The banking/payments industry anchor. Feeds the Engineering Manager
+  (network/access-control architecture), the Developer (secure software and
+  cryptography), the Reviewer (control enforcement on the diff), the QA Tester
+  (observable controls) and the Release Manager (release-blocking controls).
+  This is NOT a certified PCI compliance artifact and not a QSA assessment —
+  see the disclaimer in compliance.md.
+
+references:
+  - https://www.pcisecuritystandards.org/
