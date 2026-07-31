@@ -12,7 +12,7 @@ rules:
     # vehicle lifecycle (development, production, post-production). Cited at
     # provision level; no ISO/SAE 21434 clause text is reproduced.
     controls:
-      csms_established: required          # A certified Cyber Security Management System governs the vehicle type
+      csms_established: required          # A defined, auditable Cyber Security Management System governs the vehicle type
       risk_identification: required       # Cyber security risks are identified across the vehicle lifecycle
       risk_assessment_treatment: required # Identified risks are assessed and treated (mitigated/accepted with justification)
       security_by_design: required        # Risk treatment is applied in the design of the vehicle and its systems

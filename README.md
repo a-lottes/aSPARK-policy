@@ -379,9 +379,9 @@ id stays **flat** (for users): `aspark:owasp`, not `aspark:compliance/owasp`.
 
 ```
 packs/
-├── compliance/     iso27001 · owasp
+├── compliance/     iso27001 · owasp · pci-dss · un-r155
 ├── architecture/   clean-architecture
-├── language/       java
+├── language/       java · misra
 ├── framework/      spring · react
 ├── cloud/          aws · azure
 └── platform/       sap
@@ -426,6 +426,9 @@ an existing agent directly:
 | **aws** | cloud | baseline | Engineering Manager — *no lens today* |
 | **azure** | cloud | baseline | Engineering Manager — *no lens today* |
 | **sap** | platform | baseline | Engineering Manager / Developer |
+| **pci-dss** | compliance | universal | Product Owner compliance + existing `security` lens |
+| **un-r155** | compliance | universal | Product Owner compliance + existing `security` lens |
+| **misra** | language | baseline | Developer (`code.misra`) |
 
 > **This catalog reveals two gaps in aSPARK Core:** there is no `cloud` lens and
 > no `architecture` lens yet. Until they exist, `aws`/`azure`/`clean-architecture`
@@ -571,7 +574,6 @@ Enterprise modules can be independently versioned and maintained:
 - OWASP Policy Pack
 - NIST Policy Pack
 - Automotive SPICE Pack
-- MISRA Pack
 - Medical Device Pack
 - GDPR Pack
 - Internal Corporate Packs
