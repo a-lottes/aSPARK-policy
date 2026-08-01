@@ -6,12 +6,16 @@
 > policy layer that every aSPARK agent follows — consistently, automatically and
 > auditable.
 
-> **Project status: early development, unreleased.** The design is settled and
-> a working foundation exists — a documented format (`FORMAT-REFERENCE.md`), a
-> tested JSON Schema, an installable Python package, and 8 real catalog packs
-> (see [Install](#install) and [Project Status](#project-status) for the
-> honest roadmap). What's still missing: a `validate` CLI, the Facilitator
-> integration in aSPARK Core, and an actual tagged release. The sibling
+> **Project status: shipped at `v0.2.0` — as a format and a catalog, not yet as
+> an enforcement engine.** You can adopt it today: a documented format
+> (`FORMAT-REFERENCE.md`), a tested JSON Schema, an installable Python package,
+> and 11 real catalog packs including the industry anchors `pci-dss`, `un-r155`
+> and `misra` — pulled in as one Git submodule, no Python and no tooling to run
+> (see [Install](#install) and [Project Status](#project-status) for the honest
+> roadmap). What's still missing is **machine enforcement**: a `validate` CLI and
+> the Facilitator integration in aSPARK Core. Until those land, the policy is
+> readable, inheritable and auditable — but no agent picks it up automatically.
+> The sibling
 > projects [aSPARK](https://github.com/a-lottes/aSPARK) (the delivery loop) and
 > [aspark-graph](https://github.com/a-lottes/aSPARK-graph) (the traceability
 > graph) exist and work today.
@@ -112,8 +116,7 @@ See [Project Status](#project-status) for what's still open, and
         ┌───────────────────┼───────────────────┐
         │                   │                   │
    aSPARK-policy      aspark-graph        aSPARK-insights
-    (this repo,                             (planned)
-   early development)
+    (this repo)                          (early development)
         │                   │                   │
         └───────────────────┼───────────────────┘
                         aSPARK Core
@@ -121,10 +124,10 @@ See [Project Status](#project-status) for what's still open, and
 
 | Product              | Status              | Responsibility                                   |
 | -------------------- | -------------------- | ------------------------------------------------ |
-| **aSPARK Core**      | shipped              | Delivery process, roles, gates, templates        |
-| **aspark-graph**     | shipped              | Traceability and engineering knowledge graph     |
-| **aSPARK-policy**    | early development, unreleased | Enterprise engineering standards and governance  |
-| **aSPARK-insights**  | planned              | Engineering metrics and management dashboards    |
+| **aSPARK Core**      | shipped, `v0.4.0`    | Delivery process, roles, gates, templates        |
+| **aspark-graph**     | shipped, `v0.7.0` (on PyPI) | Traceability and engineering knowledge graph     |
+| **aSPARK-policy**    | shipped, `v0.2.0` (format + catalog; enforcement open) | Enterprise engineering standards and governance  |
+| **aSPARK-insights**  | early development, `v0.1.0` | Engineering metrics and management dashboards    |
 
 ### Separation of concerns
 
@@ -384,7 +387,7 @@ packs/
 ├── language/       java · misra
 ├── framework/      spring · react
 ├── cloud/          aws · azure
-└── platform/       sap
+└── platform/       (empty — sap is planned, not authored)
 ```
 
 ```yaml
@@ -402,8 +405,8 @@ The distinction matters because it decides what may be locked:
 
 | Kind | Meaning | May be `final`? | Examples |
 |---|---|---|---|
-| **universal** | the same for every organization — an external standard | yes | `owasp`, `iso27001` |
-| **baseline** | an opinionated starting point, meant to be overridden per org | no | `java`, `spring`, `react`, `aws`, `azure`, `sap`, `clean-architecture` |
+| **universal** | the same for every organization — an external standard | yes | `owasp`, `iso27001`, `pci-dss`, `un-r155` |
+| **baseline** | an opinionated starting point, meant to be overridden per org | no | `java`, `misra`, `spring`, `react`, `aws`, `azure`, `clean-architecture` |
 
 A universal pack (OWASP Top 10) is a fact of the industry, so a corporate level
 may lock it. A baseline pack that pins *Java 21* is a **default, not a
@@ -425,7 +428,7 @@ an existing agent directly:
 | **react** | framework | baseline | Developer + existing `ux` lens |
 | **aws** | cloud | baseline | Engineering Manager — *no lens today* |
 | **azure** | cloud | baseline | Engineering Manager — *no lens today* |
-| **sap** | platform | baseline | Engineering Manager / Developer |
+| **sap** | platform | baseline | Engineering Manager / Developer — *planned, not authored yet* |
 | **pci-dss** | compliance | universal | Product Owner compliance + existing `security` lens |
 | **un-r155** | compliance | universal | Product Owner compliance + existing `security` lens |
 | **misra** | language | baseline | Developer (`code.misra`) |
@@ -536,8 +539,10 @@ The policy engine defines the rules; the graph verifies traceability.
 
 ## Project Status
 
-aSPARK-policy is in **early development, not yet released**. This README is
-the design document; it always reflects the current state honestly.
+aSPARK-policy is **shipped at `v0.2.0` as a format and a catalog**; enforcement
+is the open half. Not yet on PyPI — adoption is by Git submodule, which is the
+intended path anyway. This README is the design document; it always reflects the
+current state honestly.
 
 - [x] Vision, positioning in the product family, separation of concerns
 - [x] Integration design: repository layer via Git submodule at `.spark/policy`
@@ -548,7 +553,7 @@ the design document; it always reflects the current state honestly.
       lens binding; `owasp` scaffolded under `packs/` as the reference pack
 - [x] `policy.yaml` / `pack.yaml` schema (JSON Schema, draft 2020-12) —
       formal, validatable definition under `src/aspark_policy/schemas/`;
-      validates all four format fixtures and all 8 shipped packs clean
+      validates all four format fixtures and all 11 shipped packs clean
 - [x] Rule anatomy — optional `id`/`severity`/`scope`/`check` on any rule
       block, aligned with the aSPARK Enterprise Architecture Handbook's
       vision; `check: graph-query` is structural only until aSPARK-graph
@@ -556,9 +561,11 @@ the design document; it always reflects the current state honestly.
 - [ ] `aspark-policy validate` CLI — lint a policy repo standalone and in CI
 - [ ] Facilitator/`/charter` integration in aSPARK Core — read, resolve and
       bind `.spark/policy/policy.yaml`
-- [ ] Fill the built-in catalog — `iso27001`, `clean-architecture`, `java`,
-      `spring`, `react`, `aws`, `azure` are authored; only `sap` remains
-      (excluded so far: no verified SAP source material to author credibly)
+- [ ] Fill the built-in catalog — 11 packs are authored: `owasp`, `iso27001`,
+      `pci-dss`, `un-r155`, `clean-architecture`, `java`, `misra`, `spring`,
+      `react`, `aws`, `azure`. Only `sap` remains (excluded so far: no verified
+      SAP source material to author credibly), so the `platform/` axis is
+      currently empty
 - [ ] New lenses in aSPARK Core — `cloud` and `architecture`, so `aws`/`azure`/
       `clean-architecture` bind to a lens instead of plain constraints
 - [ ] Per-phase policy enforcement wired into the remaining seven skills
