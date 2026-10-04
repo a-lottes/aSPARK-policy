@@ -1,0 +1,8 @@
+schema_version: 1
+name: Corporate
+rules:
+  security:
+    owasp_top10: true
+    final: true            # no BU, department or project can turn this off
+  review:
+    minimum_reviewers: 1

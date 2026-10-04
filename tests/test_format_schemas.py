@@ -394,15 +394,18 @@ def test_no_schema_references_a_remote_uri():
             )
 
 
-def test_dependencies_remain_empty():
-    # NFR-5 / A2 Option A: schema-only deliverable, no runtime dependency
-    # promotion. jsonschema/PyYAML must be dev-only.
+def test_runtime_dependency_is_pyyaml_only_and_cli_is_wired():
+    # resolve-cli NFR-9 (constitution §3, amended): PyYAML is the one runtime
+    # dependency; jsonschema stays dev-only. The CLI entry point is wired and
+    # the pack catalog ships inside the wheel.
     pyproject = tomllib.loads((REPO_ROOT / "pyproject.toml").read_text())
-    assert pyproject["project"]["dependencies"] == []
+    assert pyproject["project"]["dependencies"] == ["PyYAML>=6.0"]
     dev_deps = " ".join(pyproject["project"]["optional-dependencies"]["dev"])
     assert "jsonschema" in dev_deps
-    assert "PyYAML" in dev_deps
-    assert "scripts" not in pyproject["project"]  # still no CLI wired (§6)
+    assert "PyYAML" not in dev_deps
+    assert pyproject["project"]["scripts"] == {"aspark-policy": "aspark_policy._cli:main"}
+    wheel = pyproject["tool"]["hatch"]["build"]["targets"]["wheel"]
+    assert wheel["force-include"] == {"packs": "aspark_policy/packs"}
 
 
 # --- rule-anatomy-v2: id/severity/scope/check as new optional ruleBlock keys ---

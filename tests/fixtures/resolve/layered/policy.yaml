@@ -1,0 +1,9 @@
+schema_version: 1
+name: Project
+extends: levels/department
+imports:
+  - aspark:java
+  - company:acme-naming
+rules:
+  review:
+    minimum_reviewers: 3

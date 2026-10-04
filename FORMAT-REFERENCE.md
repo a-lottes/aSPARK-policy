@@ -26,7 +26,7 @@ standards. One per policy level (corporate, business-unit, project, …).
 |---|---|---|---|
 | `schema_version` | **required** | integer | Version of the `policy.yaml` *format* itself (currently `1`). Not the package version — that is the Git tag of the policy repo. |
 | `name` | **required** | string | Human-readable name of this policy, e.g. `"ACME Enterprise Policy"`. |
-| `extends` | optional | string | The parent policy level this one inherits from (used in multi-level inheritance). Omitted at the root level. |
+| `extends` | optional | string | The parent policy level this one inherits from (used in multi-level inheritance). A path **relative to this file's directory** — a directory holding a `policy.yaml`, or a `.yaml` file — that must stay inside the project root (`extends: corporate` reads `corporate/policy.yaml` next to this file). Omitted at the root level. |
 | `imports` | optional | list of import strings | Packs this policy pulls in. See [§3 Import namespaces](#3-import-namespaces). |
 | `rules` | optional | mapping | The rule tree. Keys are rule domains (`review`, `security`, `architecture`, `code`, …); values are domain-specific settings. See [§1.1](#11-the-rules-tree). |
 
@@ -43,14 +43,32 @@ Two structural conventions apply to **any** rule block:
   lower inheritance levels may tighten it but never weaken or remove it. Only
   meaningful on a pack of `kind: universal` or an org-authored rule (see the
   README's inheritance semantics). A `baseline` pack's rules must **not** be
-  `final`.
+  `final`. `final: true` works on any mapping under `rules`, at any depth, and
+  locks that mapping's whole subtree. What *tighten* and *weaken* mean is fixed
+  precisely by `aspark-policy resolve` (README, [Resolving a
+  policy](README.md#resolving-a-policy)): a lower level may add keys that did not
+  exist and may move a pack-declared *ordered* value in the stricter direction;
+  every other difference at a locked path is a violation.
+- **`ordered`** — a reserved key a **pack** may put inside any rule mapping to
+  declare which direction is stricter for some of that mapping's scalar keys:
+  `ordered: {<key>: higher-is-stricter | lower-is-stricter}`. For booleans `true`
+  counts as higher than `false`. It is only valid in a pack's own `policy.yaml`
+  (a project cannot declare its own escape from a lock), it is removed from the
+  resolved `rules`, and it is reported in the top-level `ordered` list of the
+  `resolve` output. Rule blocks accept extra keys, so this needs no schema
+  change; a rule domain literally named `ordered` directly under `rules` is just
+  a domain. A declaration only counts for a lock set by the policy file that
+  imported the declaring pack or a more specific one, or by the declaring pack
+  itself or a pack listed after it; a pack imported by a more specific file than
+  the lock cannot loosen it.
 - **`!override`** — a YAML tag on a list value that **replaces** the inherited
-  list instead of merging into it. Without it, lists merge across levels.
+  list instead of merging into it. Without it, lists merge across levels. It is
+  only valid on a list; on a mapping or scalar `resolve` fails with exit 2.
 
 Scalar values on two levels resolve **more-specific-wins** (project beats
 department beats corporate). This document defines the *shape*; the *resolution
-semantics* are documented in the README and will be executed by a later
-increment — `foundation` ships neither a resolver nor a validator.
+semantics* are documented in the README and executed by `aspark-policy resolve`
+(from `v0.3.0`).
 
 #### Rule anatomy — optional, richer identification
 
@@ -136,8 +154,8 @@ of the id** — that is the single most important rule here.
 | Form | Meaning | Example |
 |---|---|---|
 | `aspark:<pack>` | a built-in pack shipped in this repo's `packs/` | `aspark:owasp` |
-| `company:<pack>` | a pack defined in the same (company) policy repo | `company:acme-naming` |
-| `git@<host>:<org>/<repo>.git#<tag>` | an external policy repo, pinned to a tag | `git@github.com:acme/policy.git#v2` |
+| `company:<pack>` | a pack defined in the same (company) policy repo, at `<policy dir>/packs/<category>/<pack>/` (the directory of the entry `policy.yaml`) | `company:acme-naming` |
+| `git@<host>:<org>/<repo>.git#<tag>` | an external policy repo, pinned to a tag. **Not resolved offline:** `aspark-policy resolve` exits 2 with `not supported offline` | `git@github.com:acme/policy.git#v2` |
 
 **Flat-id rule — good vs. bad:**
 

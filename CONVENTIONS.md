@@ -22,6 +22,7 @@
 | `pyproject.toml` | Project + build config (Python ≥3.11, uv, hatchling, pytest). |
 | `uv.lock` | Committed lockfile — deterministic `uv sync` (NFR-6). |
 | `.gitignore` | Excludes OS/editor cruft and Python/uv artifacts. |
+| `.github/` | CI: `workflows/test.yml` runs the test suite on ubuntu, macOS and Windows (Python 3.11). |
 | `.spark/` | The aSPARK delivery trail (spec, plan, review, qa, release) for each feature. |
 
 **Not documented as content paths:** `.git/` is Git's own internal directory,
@@ -36,8 +37,12 @@ Tooling code lives in **`src/aspark_policy/`** (src-layout, package name
 `aspark_policy`), with tests in **`tests/`**. The **JSON Schema** for
 `policy.yaml`/`pack.yaml` ships under `src/aspark_policy/schemas/` (three
 draft-2020-12 schema files, tested in `tests/test_format_schemas.py`). The
-future **`aspark-policy validate` CLI** is added here in a later increment; no
-other location is introduced for it.
+**`aspark-policy` CLI** (`validate` and `resolve`, since `v0.3.0`) lives in the
+same package: `_cli.py` is the entry point (`[project.scripts]` in
+`pyproject.toml`), the other underscore-prefixed modules are private. The
+built-in pack catalog (`packs/`) is shipped inside the wheel as package data.
+Fixtures for the CLI are under `tests/fixtures/resolve/` and
+`tests/fixtures/validate/`; no other location is introduced for tooling.
 
 ## Where a pack goes
 
@@ -59,7 +64,7 @@ the layout absorbs them without a later restructure (NFR-4):
 
 | Roadmap item | Home |
 |---|---|
-| `aspark-policy validate` CLI | `src/aspark_policy/` (a `[project.scripts]` entry added in `pyproject.toml` then) |
+| `aspark-policy validate` / `resolve` CLI | **shipped in `v0.3.0`** — `src/aspark_policy/` with a `[project.scripts]` entry in `pyproject.toml` |
 | Fill the built-in catalog (`iso27001`, `java`, `spring`, `react`, `aws`, `azure`, `sap`, `clean-architecture`) | `packs/<category>/<id>/` (category dirs already exist) |
 | Template company policy repo | `examples/` (deferred; `policy.yaml` at its root per the submodule-mount rule) |
 | Facilitator / `/charter` integration | lives in aSPARK Core, not this repo; consumes `.spark/policy/policy.yaml` |

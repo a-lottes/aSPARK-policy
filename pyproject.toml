@@ -1,6 +1,6 @@
 [project]
 name = "aspark-policy"
-version = "0.2.0"
+version = "0.3.0"
 description = "Enterprise Policy-as-Code for the aSPARK product family."
 readme = "README.md"
 requires-python = ">=3.11"
@@ -8,14 +8,16 @@ license = { text = "MIT" }
 authors = [{ name = "Andreas Lottes" }]
 keywords = ["aspark", "policy-as-code", "governance", "engineering-standards"]
 
-# No runtime dependencies yet. The `foundation` increment ships an empty,
-# installable scaffold only — no policy parsing, no schema, no `validate` CLI
-# (spec §6, AC-6.5). Deliberately NO `[project.scripts]` entry, so no CLI is
-# even wired until a later increment adds one.
-dependencies = []
+# PyYAML is the only runtime dependency (constitution §3, spec D1): it parses
+# policy.yaml/pack.yaml for `aspark-policy resolve` and `validate`. The CLI is
+# wired below (resolve-cli increment).
+dependencies = ["PyYAML>=6.0"]
+
+[project.scripts]
+aspark-policy = "aspark_policy._cli:main"
 
 [project.optional-dependencies]
-dev = ["pytest>=8.0", "jsonschema>=4.20", "PyYAML>=6.0"]
+dev = ["pytest>=8.0", "jsonschema>=4.20"]
 
 [project.urls]
 Homepage = "https://github.com/a-lottes/aSPARK-policy"
@@ -27,6 +29,11 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/aspark_policy"]
+
+# Ship the pack catalog inside the wheel so `aspark:` imports resolve for an
+# installed CLI, not only from a source checkout.
+[tool.hatch.build.targets.wheel.force-include]
+"packs" = "aspark_policy/packs"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

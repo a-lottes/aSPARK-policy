@@ -1,0 +1,5 @@
+rules:
+  code:
+    java:
+      final: true
+      v: 21

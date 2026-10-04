@@ -1,0 +1,6 @@
+schema_version: 1
+name: Payment API
+extends: corporate
+rules:
+  review:
+    minimum_reviewers: 2   # tightening is always allowed

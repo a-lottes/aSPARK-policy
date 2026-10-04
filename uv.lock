@@ -4,21 +4,23 @@ requires-python = ">=3.11"
 
 [[package]]
 name = "aspark-policy"
-version = "0.2.0"
+version = "0.3.0"
 source = { editable = "." }
+dependencies = [
+    { name = "pyyaml" },
+]
 
 [package.optional-dependencies]
 dev = [
     { name = "jsonschema" },
     { name = "pytest" },
-    { name = "pyyaml" },
 ]
 
 [package.metadata]
 requires-dist = [
     { name = "jsonschema", marker = "extra == 'dev'", specifier = ">=4.20" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.0" },
-    { name = "pyyaml", marker = "extra == 'dev'", specifier = ">=6.0" },
+    { name = "pyyaml", specifier = ">=6.0" },
 ]
 provides-extras = ["dev"]
 

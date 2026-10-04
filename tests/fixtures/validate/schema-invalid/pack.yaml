@@ -1,0 +1,5 @@
+id: schema-invalid
+category: infrastructure
+kind: universal
+version: one
+maps_to_lens: null

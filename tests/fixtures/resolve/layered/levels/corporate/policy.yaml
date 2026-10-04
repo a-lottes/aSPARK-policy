@@ -1,0 +1,9 @@
+schema_version: 1
+name: Corporate
+imports:
+  - aspark:owasp
+  - aspark:iso27001
+rules:
+  review:
+    minimum_reviewers: 1
+    required: true

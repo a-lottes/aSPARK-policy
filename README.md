@@ -6,15 +6,17 @@
 > policy layer that every aSPARK agent follows — consistently, automatically and
 > auditable.
 
-> **Project status: shipped at `v0.2.0` — as a format and a catalog, not yet as
-> an enforcement engine.** You can adopt it today: a documented format
+> **Project status: shipped at `v0.3.0` — as a format, a catalog and a
+> deterministic resolver, not yet as an enforcement engine.** You can adopt it today: a documented format
 > (`FORMAT-REFERENCE.md`), a tested JSON Schema, an installable Python package,
 > and 11 real catalog packs including the industry anchors `pci-dss`, `un-r155`
 > and `misra` — pulled in as one Git submodule, no Python and no tooling to run
 > (see [Install](#install) and [Project Status](#project-status) for the honest
-> roadmap). What's still missing is **machine enforcement**: a `validate` CLI and
-> the Facilitator integration in aSPARK Core. Until those land, the policy is
-> readable, inheritable and auditable — but no agent picks it up automatically.
+> roadmap). The `aspark-policy` CLI can now **validate** policy files and
+> **resolve** the effective policy deterministically — but no agent calls it
+> yet: what's still missing is the Facilitator integration in aSPARK Core.
+> Until that lands, the policy is readable, inheritable and auditable — but no
+> agent picks it up automatically.
 > The sibling
 > projects [aSPARK](https://github.com/a-lottes/aSPARK) (the delivery loop) and
 > [aspark-graph](https://github.com/a-lottes/aSPARK-graph) (the traceability
@@ -79,9 +81,11 @@ for the full layout and [How agents discover the policy](#how-agents-discover-th
 for what happens next.
 
 > **Honest limitation:** today this mounts the *content* (standards, rules,
-> packs) but nothing enforces it yet — the `aspark-policy validate` CLI and
-> the Facilitator/`/charter` binding in aSPARK Core are still open roadmap
-> items. Mounting now establishes the convention enforcement will attach to.
+> packs). The `aspark-policy` CLI can validate it and compute the effective
+> policy (see [Resolving a policy](#resolving-a-policy)), but no agent calls it
+> yet — the Facilitator/`/charter` binding in aSPARK Core is still an open
+> roadmap item. Mounting now establishes the convention enforcement will
+> attach to.
 
 ### For contributors (working on the format, schemas or packs)
 
@@ -92,15 +96,18 @@ to a package index — work from a checkout of this repository:
 git clone https://github.com/a-lottes/aSPARK-policy.git
 cd aSPARK-policy
 uv sync --extra dev    # installs into a local .venv
-uv run pytest          # 56 tests: schema self-validity, fixtures, all 8 packs
+uv run pytest          # 208 tests: schemas, fixtures, all 11 packs, the CLI
+uv run aspark-policy validate packs/    # lint the catalog
+uv run aspark-policy resolve --imports aspark:owasp,aspark:java
 ```
 
 What this gets you: the documented format
 ([`FORMAT-REFERENCE.md`](FORMAT-REFERENCE.md)), three tested JSON Schemas
 under `src/aspark_policy/schemas/` you can point any JSON-Schema-aware tool
-at, and the built-in `aspark:` pack catalog under `packs/`. There is **no
-CLI yet** — no `aspark-policy validate` command, no `[project.scripts]` entry.
-See [Project Status](#project-status) for what's still open, and
+at, the built-in `aspark:` pack catalog under `packs/`, and the `aspark-policy`
+command line (`validate` and `resolve`, see [Resolving a
+policy](#resolving-a-policy)). The only runtime dependency is PyYAML. See
+[Project Status](#project-status) for what's still open, and
 [`CONTRIBUTING.md`](CONTRIBUTING.md) for the pack-adding workflow.
 
 > **One-line takeaway:** adopting a policy → one `git submodule add` into
@@ -126,7 +133,7 @@ See [Project Status](#project-status) for what's still open, and
 | -------------------- | -------------------- | ------------------------------------------------ |
 | **aSPARK Core**      | shipped, `v0.4.0`    | Delivery process, roles, gates, templates        |
 | **aspark-graph**     | shipped, `v0.7.0` (on PyPI) | Traceability and engineering knowledge graph     |
-| **aSPARK-policy**    | shipped, `v0.2.0` (format + catalog; enforcement open) | Enterprise engineering standards and governance  |
+| **aSPARK-policy**    | shipped, `v0.3.0` (format + catalog + resolver; enforcement open) | Enterprise engineering standards and governance  |
 | **aSPARK-insights**  | early development, `v0.1.0` | Engineering metrics and management dashboards    |
 
 ### Separation of concerns
@@ -342,7 +349,7 @@ Predictable rules instead of interpretation:
 |---|---|
 | Scalar set on two levels | the **more specific level wins** (project beats department beats corporate) |
 | Lists (e.g. approved dependencies) | **merged** across levels; a level may replace instead with `!override` |
-| Block marked `final: true` | **locked** — lower levels may tighten it, never weaken or remove it |
+| Block marked `final: true` | **locked** — lower levels may add new keys and tighten what a pack declares as *ordered*, never weaken, change or remove anything else (details below) |
 | Rule only on one level | inherited unchanged |
 
 Example — corporate locks security, the project tightens review:
@@ -356,8 +363,8 @@ rules:
   review:
     minimum_reviewers: 1
 
-# payment-api/policy.yaml
-extends: corporate
+# payment-api/policy.yaml  (the corporate file sits in the corporate/ subdirectory)
+extends: corporate         # a path relative to this file; see "Resolving a policy"
 rules:
   review:
     minimum_reviewers: 2   # tightening is always allowed
@@ -365,6 +372,166 @@ rules:
 
 `final` exists for the compliance case: a regulated organization must be able
 to guarantee that a rule holds in *every* project, without auditing each one.
+
+
+### Resolving a policy
+
+`aspark-policy resolve` turns the rules above into code. It is deterministic
+and offline: no network, no language model, and the same input always produces
+the same bytes. It does not run any check and no agent calls it yet — it
+computes the **effective policy** and says where every value came from.
+
+```bash
+aspark-policy resolve ./payment-api                          # a project directory
+aspark-policy resolve --imports aspark:owasp,aspark:java     # or just some packs
+aspark-policy validate packs/                                # schemas + pack integrity
+```
+
+**Where it looks.** `resolve <dir>` reads `<dir>/.spark/policy/policy.yaml`,
+else `<dir>/policy.yaml`. `<dir>` and `--imports` cannot be combined.
+
+**Layer order** (general to specific; a later layer wins):
+
+1. the imported packs, in listed order — the imports of the whole `extends`
+   chain, the most general ancestor's first, de-duplicated by first occurrence;
+2. each `extends` ancestor, from the most general to the most specific;
+3. the project's own `policy.yaml`, last.
+
+`extends` is a path **relative to the extending file** — a directory holding a
+`policy.yaml`, or a `.yaml` file — and must stay inside the project root.
+`company:<id>` packs are read from `<policy dir>/packs/<category>/<id>/`.
+`aspark:` and `company:` imports resolve; `git@…#tag` imports are **not supported
+offline** (exit 2, naming the import).
+
+**Merging.** A scalar (or any other pair that is not mapping+mapping or
+list+list) is replaced by the more specific layer. Mappings merge key by key.
+Lists concatenate general to specific, keep the **first occurrence** of an
+element and drop duplicates by whole-value equality (`true` is not `1`);
+`!override` on a list keeps only the more specific list.
+
+**`final`.** `final: true` on any mapping under `rules` locks its whole subtree
+for every more specific layer. A more specific layer may
+
+- **add** a key that did not exist, and
+- **tighten** a scalar that a *pack* declared as ordered
+  (`ordered: {strict_mode: higher-is-stricter}` in the pack's `policy.yaml`;
+  `true` is higher than `false`). Only a pack imported by the locking file (or an
+  earlier one) counts; a pack that a more specific file imports cannot open its
+  own escape.
+
+Everything else at a locked path is a violation — changing or removing a value,
+setting `final: false`, replacing the block, appending to a locked list — and the
+locked value is kept. All violations are reported in one run. A `baseline` pack
+that sets `final` is an error too.
+
+**Output.** One JSON document with sorted keys on stdout. `resolve_format`
+(currently **`1.0.0`**) versions its shape; a change to the shape bumps it by
+semver. `origins` lists, for every leaf value and every list element, the layer
+(`level`, 0 = most general), `pack` (`none` for a local file) and `file` that
+supplied it, plus the key path. File paths are relative to the project root (or
+to the catalog for `aspark:` packs), so the output does not depend on where the
+project lives. Example (the files are in `tests/fixtures/resolve/example/`; the
+corporate level is the `corporate/` subdirectory):
+
+<!-- example:resolve:start -->
+```json
+{
+  "input": {
+    "imports": [],
+    "policy": ".spark/policy/policy.yaml"
+  },
+  "layers": [
+    {
+      "file": ".spark/policy/corporate/policy.yaml",
+      "kind": "policy",
+      "level": 0,
+      "name": "Corporate",
+      "pack": "none"
+    },
+    {
+      "file": ".spark/policy/policy.yaml",
+      "kind": "policy",
+      "level": 1,
+      "name": "Payment API",
+      "pack": "none"
+    }
+  ],
+  "ordered": [],
+  "origins": [
+    {
+      "file": ".spark/policy/policy.yaml",
+      "key": "rules.review.minimum_reviewers",
+      "level": 1,
+      "pack": "none"
+    },
+    {
+      "file": ".spark/policy/corporate/policy.yaml",
+      "key": "rules.security.final",
+      "level": 0,
+      "pack": "none"
+    },
+    {
+      "file": ".spark/policy/corporate/policy.yaml",
+      "key": "rules.security.owasp_top10",
+      "level": 0,
+      "pack": "none"
+    }
+  ],
+  "resolve_format": "1.0.0",
+  "rules": {
+    "review": {
+      "minimum_reviewers": 2
+    },
+    "security": {
+      "final": true,
+      "owasp_top10": true
+    }
+  }
+}
+```
+<!-- example:resolve:end -->
+
+A violation prints nothing on stdout (with `--json`, only the violations) and
+one line per violation on stderr: the file that violated, the locked key, and
+the file that locked it.
+
+`--json` entries always have `key`, `locked_by`, `violated_by` and `reason`.
+For a `final` violation `reason` is one of `removed`, `changed`, `weakened`,
+`baseline-final` or `ordered-invalid` and `locked_by` is the locking file. For a
+schema error in an input file (also exit 1) `locked_by` is `null`, `key` is the
+file-local key (`-` for the file itself) and `reason` is the schema message, so
+branch on `locked_by` before switching on `reason`.
+
+<!-- example:violation:start -->
+```text
+error: .spark/policy/policy.yaml: rules.security.owasp_top10: final lock violated: changed (locked by .spark/policy/corporate/policy.yaml)
+```
+<!-- example:violation:end -->
+
+`validate` checks a `pack.yaml`, a `policy.yaml`, a pack directory or a whole
+tree against the JSON Schemas and checks pack integrity: exactly `pack.yaml`,
+one `*.md` and `policy.yaml`; `id` equal to the directory name; no `final` in a
+`baseline` pack. Without a path it validates `./packs`.
+
+<!-- example:validate:start -->
+```text
+$ aspark-policy validate packs/
+ok: validated 22 files
+```
+<!-- example:validate:end -->
+
+**Exit codes and streams.** Results go to stdout, diagnostics to stderr as
+`error: <file>: <key>: <reason>`; output never contains colour codes.
+
+| Code | Meaning |
+|---|---|
+| `0` | success |
+| `1` | a policy or validation violation: a `final` lock, a schema error in any loaded file, a broken pack |
+| `2` | usage or IO error: a bad flag, a missing file, malformed YAML in `resolve`, an unresolvable import, `extends` outside the root or cyclic |
+
+`resolve` and `validate` are the only public surface of the Python package: the
+flags, the exit codes, the `resolve_format` shape, the pack ids and the
+`aspark:` namespace and the schemas. The Python modules are private.
 
 ---
 
@@ -539,8 +706,8 @@ The policy engine defines the rules; the graph verifies traceability.
 
 ## Project Status
 
-aSPARK-policy is **shipped at `v0.2.0` as a format and a catalog**; enforcement
-is the open half. Not yet on PyPI — adoption is by Git submodule, which is the
+aSPARK-policy is **shipped at `v0.3.0` as a format, a catalog and a deterministic
+resolver**; agent enforcement is the open half. Not yet on PyPI — adoption is by Git submodule, which is the
 intended path anyway. This README is the design document; it always reflects the
 current state honestly.
 
@@ -549,6 +716,8 @@ current state honestly.
 - [x] Constitution binding designed — `/charter` as the single discovery path,
       no second source of truth
 - [x] Inheritance semantics defined — specific-wins, list merging, `final` lock
+      — and now executable: `aspark-policy resolve` implements them
+      deterministically (see [Resolving a policy](#resolving-a-policy))
 - [x] Pack catalog designed — categories, universal vs. baseline, per-pack
       lens binding; `owasp` scaffolded under `packs/` as the reference pack
 - [x] `policy.yaml` / `pack.yaml` schema (JSON Schema, draft 2020-12) —
@@ -558,7 +727,10 @@ current state honestly.
       block, aligned with the aSPARK Enterprise Architecture Handbook's
       vision; `check: graph-query` is structural only until aSPARK-graph
       integrates
-- [ ] `aspark-policy validate` CLI — lint a policy repo standalone and in CI
+- [x] `aspark-policy validate` and `aspark-policy resolve` CLI — lint a policy
+      repo standalone and in CI, and compute the effective policy with the origin
+      of every value. This is a deterministic resolver, **not** an enforcement
+      engine: it runs no checks, and no agent calls it yet
 - [ ] Facilitator/`/charter` integration in aSPARK Core — read, resolve and
       bind `.spark/policy/policy.yaml`
 - [ ] Fill the built-in catalog — 11 packs are authored: `owasp`, `iso27001`,
@@ -572,6 +744,35 @@ current state honestly.
 - [ ] Policy node types in aspark-graph (`Policy`, `PolicyViolation`) +
       `gate_health` extension
 - [ ] Reference policy repository as a template (`company-engineering-policy`)
+
+## Changelog
+
+### 0.3.0
+
+- **Added** the `aspark-policy` command line: `resolve` computes the effective
+  policy of a project directory or an import list as byte-stable JSON
+  (`resolve_format` `1.0.0`) with the origin of every value, and fails with exit
+  code 1 on a `final` violation; `validate` checks schema conformance and pack
+  integrity.
+- **Added** `ordered` — a reserved, pack-only rule key declaring which direction
+  is stricter for a scalar, so a `final` value can be tightened.
+- **Added** the pack catalog as package data in the wheel, and a CI workflow that
+  runs the tests on Linux, macOS and Windows.
+- **Changed** the runtime now depends on PyYAML (`>=6.0`). The schemas, all pack
+  ids and all pack content are unchanged.
+- **Documented** what the earlier text left open: layer order, what tighten and
+  weaken mean, list de-duplication, how `extends` and `company:` imports find
+  their files. `extends` is a path relative to the extending file; `git@…#tag`
+  imports are not supported offline.
+
+### 0.2.0
+
+- **Added** the `pci-dss`, `un-r155` and `misra` packs (11 packs in the catalog).
+
+### 0.1.0
+
+- First release: the documented format, three JSON Schemas and the first catalog
+  packs.
 
 ## Future Extensions
 

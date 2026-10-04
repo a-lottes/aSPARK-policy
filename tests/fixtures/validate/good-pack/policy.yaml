@@ -1,0 +1,4 @@
+rules:
+  naming:
+    final: true
+    branches: kebab-case
