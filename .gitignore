@@ -17,6 +17,9 @@ dist/
 # graphify knowledge-graph output (disposable, rebuildable)
 graphify-out/
 
+# aspark-graph index (generated, rebuildable)
+.aspark-graph/
+
 # macOS / editor cruft
 .DS_Store
 .idea/
