@@ -131,7 +131,7 @@ policy](#resolving-a-policy)). The only runtime dependency is PyYAML. See
 
 | Product              | Status              | Responsibility                                   |
 | -------------------- | -------------------- | ------------------------------------------------ |
-| **aSPARK Core**      | shipped, `v0.13.1`   | Delivery process, roles, gates, templates        |
+| **aSPARK Core**      | shipped, `v0.14.1`   | Delivery process, roles, gates, templates        |
 | **aspark-graph**     | shipped, `v0.7.1` (on PyPI) | Traceability and engineering knowledge graph     |
 | **aSPARK-policy**    | shipped, `v0.3.0` (format + catalog + resolver; enforcement open) | Enterprise engineering standards and governance  |
 | **aSPARK-insights**  | shipped, `v0.12.0` (not on PyPI) | Engineering metrics and management dashboards    |
